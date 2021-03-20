@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carte Leaflet{% endblock %}
+
+{% block mystylesheets %}
+    <link href="{{ asset("jquery-ui-1.12.1/jquery-ui.structure.min.css") }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset("jquery-ui-1.12.1/jquery-ui.theme.min.css") }}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+{% endblock %}
+
+{% block myscripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+    <script src="https://www.mapquestapi.com/sdk/leaflet/v2.2/mq-map.js?key=T2uL6jJ7Au0azfzOk3kI8XEU6jne1DfM"></script>
+    <script src="https://www.mapquestapi.com/sdk/leaflet/v2.2/mq-routing.js?key=T2uL6jJ7Au0azfzOk3kI8XEU6jne1DfM"></script>
+
+
+{% endblock %}
+
+{% block body %}
+    <div class="retour"><a href="{{ path('selection') }}">Retour à la sélection</a></div>
+    <div class="map-class">
+        <div class="titre-section">
+            <h4 class="titre font-weight-bold">MAP LEAFLET</h4>
+        </div>
+        <div id="infos">
+            <p id="paris"></p>
+            <p id="status"></p>
+            <p id="description">
+                {% if ligne != null %}
+                Vous jouez avec la ligne {{ ligne }}.
+                {% else %}
+                Aucune ligne sélectionnée, affichage de la carte seule. Vous pouvez faire glisser la boîte d'une ligne sur la carte pour afficher son parcours.<br>
+                    Vous aimez marcher ? Cliquez sur deux stations de la carte pour afficher le trajet entre ces deux stations.
+                {% endif %}
+            </p>
+        </div>
+        <div id="map"></div>
+        {% if ligne != null %}
+            <div id="progressbar"><div class="progress-label">Progression</div></div>
+            <div id="stations"></div>
+            <div id="réponses">
+            <p><i>Glissez vos réponses dans les boîtes ci-dessous</i></p>
+            </div>
+        {% endif %}
+        <div id="lignes"></div>
+        <div id="valider">
+            <p>
+                <button type="submit" class="btn btn-secondary" onclick="reverseReponse()">Annuler le dernier coup</button>
+                <button type="submit" class="btn btn-success" onclick="checkReponses()">Terminer</button>
+            </p>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset("script/scriptMap.js") }}"></script>
+        <script> /* let divstatus = document.getElementById("status");
+        let mymap;
+
+        // Géolocalisation
+        divstatus.innerHTML = "<i>Affichage de la carte en cours</i>";
+        if('geolocation' in navigator) { // Géolocalisation supportée par le navigateur
+            navigator.geolocation.getCurrentPosition((position) => {    // Si localisation autorisée / succès
+                mymap = L.map('map').setView([position.coords.latitude, position.coords.longitude], 13);
+                L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=TcyoqW24ssJZ5YEpGHn1', {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.maptiler.com/">Maptiler</a>',
+                    maxZoom: 18,
+                    id: 'maptiler/streets',
+                    tileSize: 512,
+                    zoomOffset: -1
+                }).addTo(mymap);
+                divstatus.innerHTML = "";
+            },
+                (position) => {     // Si localisation n'est pas autorisée / erreur
+                    mymap = L.map('map').setView([48.856614, 2.3522219], 13);    // Localisation de Paris
+                    L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=TcyoqW24ssJZ5YEpGHn1', {
+                        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.maptiler.com/">Maptiler</a>',
+                        maxZoom: 18,
+                        id: 'maptiler/streets',
+                        tileSize: 512,
+                        zoomOffset: -1
+                    }).addTo(mymap);
+                    divstatus.innerHTML = "";
+                }
+            );
+        } else {    // Géolocalisation non-supportée par le navigateur
+            mymap = L.map('map').setView([48.856614, 2.3522219], 13);    // Localisation de Paris
+            L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=TcyoqW24ssJZ5YEpGHn1', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.maptiler.com/">Maptiler</a>',
+                maxZoom: 18,
+                id: 'maptiler/streets',
+                tileSize: 512,
+                zoomOffset: -1
+            }).addTo(mymap);
+            divstatus.innerHTML = "";
+        }
+
+        let divstations = document.getElementById("stations");
+        let divreponses = document.getElementById("réponses");
+        let latitude, longitude;
+        let k = 0;
+        $.getJSON("{{ asset("données/emplacement-des-gares-idf.geojson") }}",
+            function(data) {
+                for (var i = 0; i < Object.keys(data["features"]).length; i++) {
+                    if (data["features"][i]["properties"]["ligne"] === '{{ ligne }}') {
+                        latitude = parseFloat(data['features'][i]['geometry']['coordinates'][1]);
+                        longitude = parseFloat(data['features'][i]['geometry']['coordinates'][0]);
+                        divstations.innerHTML += "<div id='station" + i + "' class='draggable unestation'><p>" + data['features'][i]['properties']['nomlong'] + "</p></div>";
+                        divreponses.innerHTML += "<div id='repstation" + i + "' class='droppable uneréponse'><h5>" + (++k) + "</h5><p></p></div>";
+                        console.log(data['features'][i]['properties']['nomlong']);
+                        console.log(latitude);
+                        console.log(longitude);
+
+                        let marker = L.marker([latitude, longitude]);
+                        marker.bindPopup(k.toString()).openPopup();
+                        marker.addTo(mymap);
+                    }
+                    $(function() {
+                        $(".draggable").draggable();
+                    } );
+                    $(".droppable").droppable({
+                        drop: function(event, ui ) {
+                            $(this).find("p").html(ui.draggable.find("p").html());
+                        }
+                    });
+                }
+            }); */
+    </script>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sélection{% endblock %}
+
+{% block myscripts %}
+    <script>
+        $( function() {
+            $( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
+            $( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
+        } );
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="retour"><a href="{{ path('map') }}">Afficher la map vide</a></div>
+    <div class="selection-class">
+        <div class="titre-section">
+            <h4 class="titre font-weight-bold">JOUER AVEC...</h4>
+        </div>
+    <i>Vous pouvez jouer avec différents moyens de transport</i>
+    <div id="tabs">
+        <ul class="nav nav-tabs nav-fill mb-3">
+            <li class="nav-item"><a class="nav-link" href="#tabs-1">TRAMWAYS</a></li>
+            <li class="nav-item"><a class="nav-link" href="#tabs-2">MÉTROS</a></li>
+            <li class="nav-item"><a class="nav-link" href="#tabs-3">RER</a></li>
+            <li class="nav-item"><a class="nav-link" href="#tabs-4">TRAINS</a></li>
+            <li class="nav-item"><a class="nav-link" href="#tabs-5">NAVETTES</a></li>
+            <li class="nav-item"><a class="nav-link" href="#tabs-6">GRANDES LIGNES</a></li>
+            <li class="nav-item"><a class="nav-link" href="#tabs-7">FUNICULAIRES</a></li>
+        </ul>
+        <div id="tabs-1"><label>Tramways : </label></div>
+        <div id="tabs-2"><label>Métros : </label></div>
+        <div id="tabs-3"><label>RER : </label></div>
+        <div id="tabs-4"><label>Trains : </label></div>
+        <div id="tabs-5"><label>Navettes aéroportuaires : </label></div>
+        <div id="tabs-6"><label>Grandes lignes : </label></div>
+        <div id="tabs-7"><label>Funiculaires : </label></div>
+    </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+        <script src="{{ asset("script/scriptSelection.js") }}"></script>
+{% endblock %}

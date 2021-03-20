@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="author" content="Chloé Hamilcaro">
+        <title>{% block title %}Bienvenue{% endblock %}</title>
+        {# Run `composer require symfony/webpack-encore-bundle`
+           and uncomment the following Encore helpers to start using Symfony UX #}
+        {% block stylesheets %}
+            {#{{ encore_entry_link_tags('app') }}#}
+            <link href="{{ asset("bootstrap-5.0.0/css/bootstrap.min.css") }}" rel="stylesheet" type="text/css">
+            <link href="{{ asset("style/style.css") }}" rel="stylesheet" type="text/css">
+        {% endblock %}
+        {% block mystylesheets %} {% endblock %}
+
+        {% block jquery %}
+            <script src="{{ asset("jquery-ui-1.12.1/external/jquery/jquery.js") }}"></script>
+            <script src="{{ asset("jquery-ui-1.12.1/jquery-ui.js") }}"></script>
+        {% endblock %}
+        {% block myscripts %}
+        {% endblock %}
+    </head>
+    <header>
+        {% block header %}<p><h2 class="font-weight-bold lettrine">G</h2><h2 class="font-weight-bold">ARES EN IDF</h2></p>
+        {% endblock %}
+    </header>
+    <body>
+        {% block body %}
+            <div id="menu">{% block nav %}{% endblock %}</div>
+            <div class="article">
+            {% block article %}
+                <div class="titre"><h3>{% block titre %}{% endblock %}</h3></div>
+                <div class="contenu" id="principal">{% block contenu %}{% endblock %}</div>
+            {% endblock %}
+            </div>
+        {% endblock %}
+
+        {% block javascripts %}
+            {#{{ encore_entry_script_tags('app') }}#}
+        {% endblock %}
+    </body>
+</html>
